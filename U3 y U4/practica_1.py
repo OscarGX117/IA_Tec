@@ -88,3 +88,40 @@ plt.plot(historial.history["loss"])
 print("Realizar prediccion!")
 resultado = modelo.predict([10])
 print("El resultado es" + str(resultado)+"galones!")
+
+"""# Practica 1 Parte-Personalizada"""
+
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+
+pulgadas = np.array([1, 36, 12, 24, 6, 18, 30], dtype=float)
+yardas = np.array([0.0277778, 1, 0.333333, 0.666667, 0.166667, 0.5, 0.833333], dtype=float)
+
+pulgadas_norm = (pulgadas - pulgadas.mean()) / pulgadas.std()
+yardas_norm = (yardas - yardas.mean()) / yardas.std()
+
+capa = tf.keras.layers.Dense(units=1, input_shape=[1])
+modelo = tf.keras.Sequential([capa])
+
+modelo.compile(
+    optimizer=tf.keras.optimizers.Adam(0.1),
+    loss='mean_squared_error'
+)
+
+print('Comenzando entrenamiento...')
+historial = modelo.fit(pulgadas_norm, yardas_norm, epochs=1000, verbose=False)
+print("¡Modelo entrenado!")
+
+plt.xlabel("# Época")
+plt.ylabel("Magnitud de pérdida")
+plt.plot(historial.history["loss"])
+plt.show()
+
+entrada_prediccion = np.array([48], dtype=float)
+entrada_pred_norm = (entrada_prediccion - pulgadas.mean()) / pulgadas.std()
+resultado_norm = modelo.predict([entrada_pred_norm])
+resultado = resultado_norm * yardas.std() + yardas.mean()
+
+print("Realizar predicción para 48 pulgadas...")
+print("El resultado es aproximadamente " + str(resultado[0][0]) + " yardas.")
